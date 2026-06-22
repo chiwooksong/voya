@@ -22,6 +22,10 @@ export type TripInput = {
   cities: string[];
   fixedEvents: FixedEvent[];
   style: TravelStyle;
+  budget?: {
+    perNight: number; // USD
+    currency: "USD" | "KRW" | "JPY";
+  };
 };
 
 export type Place = {

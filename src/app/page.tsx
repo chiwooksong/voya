@@ -52,6 +52,8 @@ export default function HomePage() {
   const [cities, setCities] = useState<string[]>([""]);
   const [fixedEvents, setFixedEvents] = useState<FixedEvent[]>([]);
   const [showEventSearch, setShowEventSearch] = useState(false);
+  const [budgetPerNight, setBudgetPerNight] = useState<number | "">("");
+  const [budgetCurrency, setBudgetCurrency] = useState<"USD" | "KRW" | "JPY">("USD");
   const [style, setStyle] = useState<TravelStyle>({
     intensity: "relaxed",
     theme: "sightseeing",
@@ -101,6 +103,7 @@ export default function HomePage() {
       cities: validCities,
       fixedEvents: fixedEvents.filter((e) => e.title.trim()),
       style,
+      budget: budgetPerNight ? { perNight: Number(budgetPerNight), currency: budgetCurrency } : undefined,
     };
 
     setLoading(true);
@@ -380,6 +383,53 @@ export default function HomePage() {
               onClose={() => setShowEventSearch(false)}
             />
           )}
+
+          {/* Budget */}
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-base">💰</span>
+              <h2 className="font-semibold text-gray-800">1박 숙소 예산 <span className="text-gray-400 font-normal text-sm">선택</span></h2>
+            </div>
+            <div className="flex gap-2">
+              <select
+                value={budgetCurrency}
+                onChange={(e) => setBudgetCurrency(e.target.value as "USD" | "KRW" | "JPY")}
+                className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+              >
+                <option value="USD">USD ($)</option>
+                <option value="KRW">KRW (₩)</option>
+                <option value="JPY">JPY (¥)</option>
+              </select>
+              <input
+                type="number"
+                min={0}
+                placeholder="예: 100"
+                value={budgetPerNight}
+                onChange={(e) => setBudgetPerNight(e.target.value === "" ? "" : Number(e.target.value))}
+                className="flex-1 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex gap-2 mt-2 flex-wrap">
+              {budgetCurrency === "USD" && [50, 100, 150, 200, 300].map(v => (
+                <button key={v} type="button" onClick={() => setBudgetPerNight(v)}
+                  className={`text-xs px-3 py-1 rounded-full border transition ${budgetPerNight === v ? "bg-brand-600 text-white border-brand-600" : "border-gray-200 text-gray-500 hover:border-brand-400"}`}>
+                  ${v}
+                </button>
+              ))}
+              {budgetCurrency === "KRW" && [50000, 100000, 150000, 200000, 300000].map(v => (
+                <button key={v} type="button" onClick={() => setBudgetPerNight(v)}
+                  className={`text-xs px-3 py-1 rounded-full border transition ${budgetPerNight === v ? "bg-brand-600 text-white border-brand-600" : "border-gray-200 text-gray-500 hover:border-brand-400"}`}>
+                  ₩{v.toLocaleString()}
+                </button>
+              ))}
+              {budgetCurrency === "JPY" && [5000, 10000, 15000, 20000, 30000].map(v => (
+                <button key={v} type="button" onClick={() => setBudgetPerNight(v)}
+                  className={`text-xs px-3 py-1 rounded-full border transition ${budgetPerNight === v ? "bg-brand-600 text-white border-brand-600" : "border-gray-200 text-gray-500 hover:border-brand-400"}`}>
+                  ¥{v.toLocaleString()}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Travel Style */}
           <div className="p-6">

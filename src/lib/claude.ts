@@ -66,16 +66,32 @@ function buildUserPrompt(input: TripInput): string {
           .join("\n")}`
       : "";
 
+  const budgetText = input.budget
+    ? `\nHotel budget: ${input.budget.perNight} ${input.budget.currency} per night — recommend hotels within this budget range`
+    : "";
+
+  const agodaPriceParam = input.budget
+    ? (() => {
+        const { perNight, currency } = input.budget;
+        let usd = perNight;
+        if (currency === "KRW") usd = Math.round(perNight / 1350);
+        if (currency === "JPY") usd = Math.round(perNight / 150);
+        const min = Math.max(0, Math.round(usd * 0.5));
+        const max = Math.round(usd * 1.3);
+        return `&minPrice=${min}&maxPrice=${max}`;
+      })()
+    : "";
+
   return `Create a ${days.length}-day travel itinerary with these details:
 
 Dates: ${input.startDate} to ${input.endDate} (${days.length} days)
 Cities: ${input.cities.join(", ")}
 Travel intensity: ${input.style.intensity === "packed" ? "Packed (busy schedule)" : "Relaxed (leisurely pace)"}
 Theme: ${input.style.theme}
-Traveling with: ${input.style.companion}${fixedEventsText}
+Traveling with: ${input.style.companion}${budgetText}${fixedEventsText}
 
 For booking URLs, use ACTUAL dates from the itinerary:
-- Hotels: https://www.agoda.com/search?city=CITYNAME&checkIn=CHECKIN_DATE&checkOut=CHECKOUT_DATE&rooms=1&adults=2 (CITYNAME=English city, CHECKIN_DATE=that day YYYY-MM-DD, CHECKOUT_DATE=next day YYYY-MM-DD)
+- Hotels: https://www.agoda.com/search?city=CITYNAME&checkIn=CHECKIN_DATE&checkOut=CHECKOUT_DATE&rooms=1&adults=2${agodaPriceParam} (CITYNAME=English city, CHECKIN_DATE=that day YYYY-MM-DD, CHECKOUT_DATE=next day YYYY-MM-DD)
 - Activities: https://www.klook.com/en-US/search/?query=ACTIVITYNAME+CITYNAME&start_date=ACTIVITY_DATE (use actual activity name, city, and date YYYY-MM-DD)
 - Events: https://www.ticketmaster.com/search?q=EVENTNAME (replace EVENTNAME)
 - Restaurants: https://www.google.com/maps/search/RESTAURANTNAME+CITYNAME (replace with actual names)
