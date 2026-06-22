@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { TripInput, Itinerary, DayPlan } from "@/types";
-import { format, eachDayOfInterval, parseISO } from "date-fns";
+import { eachDayOfInterval, parseISO } from "date-fns";
 
 function getClient() {
   const apiKey = process.env.ANTHROPIC_API_KEY;
