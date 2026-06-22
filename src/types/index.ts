@@ -59,6 +59,7 @@ export type DayPlan = {
   hotelRecommendation?: {
     name: string;
     bookingUrl: string;
+    websiteUrl?: string; // 공식 홈페이지 (Places API)
   };
 };
 

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { ko } from "date-fns/locale";
+import { useEffect, useState } from "react";
 
 interface ItineraryCardProps {
   day: DayPlan;
@@ -75,6 +76,19 @@ export default function ItineraryCard({
   onPlaceHover,
 }: ItineraryCardProps) {
   const dateLabel = format(parseISO(day.date), "M월 d일 (EEE)", { locale: ko });
+  const [hotelWebsite, setHotelWebsite] = useState<string | null>(
+    day.hotelRecommendation?.websiteUrl ?? null
+  );
+
+  useEffect(() => {
+    if (!day.hotelRecommendation || hotelWebsite) return;
+    fetch(
+      `/api/hotel-website?name=${encodeURIComponent(day.hotelRecommendation.name)}&city=${encodeURIComponent(day.city)}`
+    )
+      .then((r) => r.json())
+      .then((data) => { if (data.websiteUrl) setHotelWebsite(data.websiteUrl); })
+      .catch(() => {});
+  }, [day.hotelRecommendation, day.city, hotelWebsite]);
   const totalDuration = day.places.reduce(
     (s, p) => s + (p.duration || 60),
     0
@@ -187,14 +201,16 @@ export default function ItineraryCard({
               </div>
             </div>
             <div className="flex gap-2">
-              <a
-                href={`https://www.google.com/search?q=${encodeURIComponent(day.hotelRecommendation.name + " official site reservation")}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs bg-gray-700 hover:bg-gray-800 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"
-              >
-                공식 홈페이지 <ExternalLink className="w-3 h-3" />
-              </a>
+              {hotelWebsite && (
+                <a
+                  href={hotelWebsite}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs bg-gray-700 hover:bg-gray-800 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"
+                >
+                  공식 홈페이지 <ExternalLink className="w-3 h-3" />
+                </a>
+              )}
               <a
                 href={day.hotelRecommendation.bookingUrl}
                 target="_blank"
