@@ -186,14 +186,24 @@ export default function ItineraryCard({
                 </p>
               </div>
             </div>
-            <a
-              href={day.hotelRecommendation.bookingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs bg-[#FF6B35] hover:bg-[#e85f2a] text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"
-            >
-              아고다 <ExternalLink className="w-3 h-3" />
-            </a>
+            <div className="flex gap-2">
+              <a
+                href={`https://www.google.com/search?q=${encodeURIComponent(day.hotelRecommendation.name + " official site reservation")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs bg-gray-700 hover:bg-gray-800 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"
+              >
+                공식 홈페이지 <ExternalLink className="w-3 h-3" />
+              </a>
+              <a
+                href={day.hotelRecommendation.bookingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs bg-[#FF6B35] hover:bg-[#e85f2a] text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"
+              >
+                아고다 <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
           </div>
         </div>
       )}
