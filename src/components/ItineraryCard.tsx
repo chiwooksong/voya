@@ -215,9 +215,9 @@ export default function ItineraryCard({
                 href={day.hotelRecommendation.bookingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs bg-[#FF6B35] hover:bg-[#e85f2a] text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"
+                className="text-xs bg-[#003580] hover:bg-[#002a6b] text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"
               >
-                아고다 <ExternalLink className="w-3 h-3" />
+                Booking.com <ExternalLink className="w-3 h-3" />
               </a>
             </div>
           </div>
