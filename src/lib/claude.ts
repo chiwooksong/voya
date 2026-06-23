@@ -70,6 +70,14 @@ function buildUserPrompt(input: TripInput): string {
     ? `\nHotel budget: ${input.budget.perNight} ${input.budget.currency} per night — recommend hotels within this budget range`
     : "";
 
+  const flightText = input.flight
+    ? `\nFlight info (CRITICAL - adjust Day 1 and last day accordingly):
+- Outbound: ${input.flight.departureAirport} → ${input.flight.arrivalAirport}, arriving at ${input.flight.arrivalTime} local time on ${input.startDate}
+  → Day 1 must start AFTER arrival: first activity = hotel check-in/luggage drop, then only nearby light activities
+- Return: departing ${input.flight.arrivalAirport} at ${input.flight.returnDepartureTime} local time on ${input.endDate}
+  → Last day must end 3 hours before departure: include airport transfer as final activity`
+    : "";
+
   const agodaPriceParam = input.budget
     ? (() => {
         const { perNight, currency } = input.budget;
@@ -88,7 +96,7 @@ Dates: ${input.startDate} to ${input.endDate} (${days.length} days)
 Cities: ${input.cities.join(", ")}
 Travel intensity: ${input.style.intensity === "packed" ? "Packed (busy schedule)" : "Relaxed (leisurely pace)"}
 Theme: ${input.style.theme}
-Traveling with: ${input.style.companion}${budgetText}${fixedEventsText}
+Traveling with: ${input.style.companion}${budgetText}${flightText}${fixedEventsText}
 
 For booking URLs, use ACTUAL dates from the itinerary:
 - Hotels: https://www.booking.com/searchresults.html?ss=HOTELNAME+CITYNAME&checkin=CHECKIN_DATE&checkout=CHECKOUT_DATE&group_adults=2&no_rooms=1 (HOTELNAME=exact hotel name in English, CITYNAME=English city, CHECKIN_DATE=that day YYYY-MM-DD, CHECKOUT_DATE=next day YYYY-MM-DD)

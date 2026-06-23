@@ -16,6 +16,13 @@ export type FixedEvent = {
   tmEventId?: string; // Ticketmaster event ID
 };
 
+export type FlightInfo = {
+  departureAirport: string; // 공항 코드 or 도시명 (예: ICN, 인천)
+  arrivalAirport: string;
+  arrivalTime: string; // HH:MM - 현지 도착 시간
+  returnDepartureTime: string; // HH:MM - 귀국 출발 시간
+};
+
 export type TripInput = {
   startDate: string;
   endDate: string;
@@ -26,6 +33,7 @@ export type TripInput = {
     perNight: number; // USD
     currency: "USD" | "KRW" | "JPY";
   };
+  flight?: FlightInfo;
 };
 
 export type Place = {

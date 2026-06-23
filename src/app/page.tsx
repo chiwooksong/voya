@@ -3,7 +3,7 @@
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { TripInput, FixedEvent, TravelStyle } from "@/types";
+import { TripInput, FixedEvent, TravelStyle, FlightInfo } from "@/types";
 import { TMEvent } from "@/lib/ticketmaster";
 import EventSearch from "@/components/EventSearch";
 import {
@@ -54,6 +54,8 @@ export default function HomePage() {
   const [showEventSearch, setShowEventSearch] = useState(false);
   const [budgetPerNight, setBudgetPerNight] = useState<number | "">("");
   const [budgetCurrency, setBudgetCurrency] = useState<"USD" | "KRW" | "JPY">("USD");
+  const [flight, setFlight] = useState<Partial<FlightInfo>>({});
+  const [showFlight, setShowFlight] = useState(false);
   const [style, setStyle] = useState<TravelStyle>({
     intensity: "relaxed",
     theme: "sightseeing",
@@ -104,6 +106,9 @@ export default function HomePage() {
       fixedEvents: fixedEvents.filter((e) => e.title.trim()),
       style,
       budget: budgetPerNight ? { perNight: Number(budgetPerNight), currency: budgetCurrency } : undefined,
+      flight: (flight.arrivalTime && flight.returnDepartureTime)
+        ? { departureAirport: flight.departureAirport || "ICN", arrivalAirport: flight.arrivalAirport || cities[0], arrivalTime: flight.arrivalTime, returnDepartureTime: flight.returnDepartureTime }
+        : undefined,
     };
 
     setLoading(true);
@@ -429,6 +434,83 @@ export default function HomePage() {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Flight Info */}
+          <div className="p-6 border-b border-gray-100">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Plane className="w-4 h-4 text-brand-600" />
+                <h2 className="font-semibold text-gray-800">항공편 정보 <span className="text-gray-400 font-normal text-sm">선택</span></h2>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowFlight(!showFlight)}
+                className="text-xs text-brand-600 hover:text-brand-700"
+              >
+                {showFlight ? "접기" : "입력하기"}
+              </button>
+            </div>
+            {!showFlight && (
+              <p className="text-xs text-gray-400">입력하면 첫날/마지막날 일정이 비행 시간에 맞게 조정돼요</p>
+            )}
+            {showFlight && (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">출발 공항</label>
+                    <input
+                      type="text"
+                      placeholder="예: ICN, 인천"
+                      value={flight.departureAirport || ""}
+                      onChange={(e) => setFlight({ ...flight, departureAirport: e.target.value })}
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">도착 공항</label>
+                    <input
+                      type="text"
+                      placeholder="예: NRT, 나리타"
+                      value={flight.arrivalAirport || ""}
+                      onChange={(e) => setFlight({ ...flight, arrivalAirport: e.target.value })}
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">현지 도착 시간 (첫날)</label>
+                    <input
+                      type="time"
+                      value={flight.arrivalTime || ""}
+                      onChange={(e) => setFlight({ ...flight, arrivalTime: e.target.value })}
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-gray-500 mb-1 block">귀국 출발 시간 (마지막날)</label>
+                    <input
+                      type="time"
+                      value={flight.returnDepartureTime || ""}
+                      onChange={(e) => setFlight({ ...flight, returnDepartureTime: e.target.value })}
+                      className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                {startDate && endDate && flight.departureAirport && (
+                  <a
+                    href={`https://www.google.com/flights#search;f=${encodeURIComponent(flight.departureAirport)};t=${encodeURIComponent(flight.arrivalAirport || cities[0] || "")};d=${startDate};r=${endDate}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-xs text-brand-600 hover:text-brand-700 mt-1"
+                  >
+                    <Plane className="w-3.5 h-3.5" />
+                    Google Flights에서 항공권 검색 →
+                  </a>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Travel Style */}
